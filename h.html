@@ -217,6 +217,7 @@
         .ear.left {
             transform: rotate(-30deg) translateX(-5px);
             border-radius: 50% 0 0 50%;
+
         }
 
         .ear.right {
@@ -263,6 +264,160 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 2;
+        }
+
+        /* Hands */
+        .arm {
+            position: absolute;
+            width: 40px;
+            height: 120px;
+            background-color: #FFDBAC;
+            z-index: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .arm.left {
+            left: 70px;
+            top: 240px;
+            border-top-left-radius: 40px;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            transform-origin: top center;
+            transform: rotate(15deg);
+        }
+
+        .arm.right {
+            right: 70px;
+            top: 240px;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            border-top-right-radius: 40px;
+            transform-origin: top center;
+            transform: rotate(-15deg);
+        }
+
+        .hand {
+            position: absolute;
+            width: 32px;
+            height: 40px;
+            background-color: #d7af7a;
+            border-radius: 10px;
+            bottom: 0;
+            left: 5px;
+            transform-origin: top center;
+            transition: transform 0.2s ease;
+        }
+
+        .hand.left {
+            transform: rotate(0deg);
+        }
+
+        .hand.right {
+            transform: rotate(0deg);
+        }
+
+        .finger {
+            position: absolute;
+            width: 8px;
+            height: 35px;
+            background-color: #0a0908;
+            border-radius: 5px;
+        }
+
+        .finger-1 {
+            left: 2px;
+            top: 20px;
+            /* transform-origin: bottom center; */
+        }
+
+        .finger-2 {
+            left: 10px;
+            top: 20px;
+            /* transform-origin: bottom center; */
+        }
+
+        .finger-3 {
+            left: 18px;
+            top: 20px;
+
+            /* transform-origin: bottom center; */
+        }
+
+        .finger-4 {
+            left: 26px;
+            top: 20px;
+
+            /* transform-origin: bottom center; */
+        }
+
+
+        .thumb {
+            position: absolute;
+            width: 8px;
+            height: 25px;
+            background-color: #090908;
+            border-radius: 5px;
+            left: -5px;
+            top: 10px;
+            transform-origin: right center;
+            transform: rotate(20deg);
+        }
+
+        /* Hand animations */
+        .speaking .arm.left {
+            animation: leftArmMove 1s infinite alternate;
+        }
+
+        .speaking .arm.right {
+            animation: rightArmMove 1s infinite alternate;
+        }
+
+        .speaking .hand.left .finger {
+            animation: leftFingerMove 0.8s infinite alternate;
+        }
+
+        .speaking .hand.right .finger {
+            animation: rightFingerMove 0.8s infinite alternate;
+        }
+
+        @keyframes leftArmMove {
+            0% {
+                transform: rotate(15deg);
+            }
+
+            100% {
+                transform: rotate(25deg);
+            }
+        }
+
+        @keyframes rightArmMove {
+            0% {
+                transform: rotate(-15deg);
+            }
+
+            100% {
+                transform: rotate(-25deg);
+            }
+        }
+
+        @keyframes leftFingerMove {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(10deg);
+            }
+        }
+
+        @keyframes rightFingerMove {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(-10deg);
+            }
         }
 
         /* Mouth shapes for lip-sync */
@@ -503,13 +658,26 @@
                 top: 150px;
             }
 
+            .arm {
+                height: 100px;
+            }
+
+            .arm.left {
+                left: 20px;
+                top: 180px;
+            }
+
+            .arm.right {
+                right: 20px;
+                top: 180px;
+            }
+
             .chat-section {
                 border-left: none;
                 border-top: 1px solid #e0e0e0;
             }
         }
     </style>
-    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -518,8 +686,7 @@
         <div class="avatar-section">
             <div id="avatar-container" class="avatar-container">
                 <div class="avatar">
-
-                                        <!-- Arms and Hands -->
+                    <!-- Arms and Hands -->
                     <div class="arm left">
                         <div class="hand left">
                             <div class="finger finger-1"></div>
@@ -538,8 +705,6 @@
                             <div class="thumb"></div>
                         </div>
                     </div>
-
-
 
                     <!-- Head and Face -->
                     <div class="head">
@@ -627,7 +792,6 @@
                 }
             }
 
-
             initElements() {
                 this.chatInput = document.getElementById('chat-input');
                 this.sendButton = document.getElementById('send-button');
@@ -644,16 +808,6 @@
                     this.chatHistory = [];
                     this.stopSpeaking();
                 });
-
-            }
-
-            stopSpeaking() {
-                if (this.synth && this.synth.speaking) {
-                    this.synth.cancel();
-                    this.isSpeaking = false;
-                    this.avatarContainer.classList.remove('speaking');
-                    this.setMouthShape('E');
-                }
             }
 
             initEventListeners() {
@@ -673,24 +827,78 @@
                 });
             }
 
+            // setupSpeech() {
+            //     this.synth = window.speechSynthesis;
+            //     this.utterance = null;
+
+            //     // Setup Web Speech Recognition
+            //     if ('webkitSpeechRecognition' in window) {
+            //         this.recognition = new webkitSpeechRecognition();
+            //         this.recognition.continuous = false;
+            //         this.recognition.interimResults = false;
+            //         this.recognition.onresult = (event) => {
+            //             const transcript = event.results[0][0].transcript;
+            //             this.chatInput.value = transcript;
+            //             this.sendMessage();
+            //         };
+            //         this.recognition.onerror = (event) => {
+            //             console.error('Speech recognition error', event.error);
+            //             this.micButton.classList.remove('active');
+            //             this.isListening = false;
+            //         };
+            //     }
+            // }
+
+            // In your AIAssistant class, modify the setupSpeech method:
+
             setupSpeech() {
                 this.synth = window.speechSynthesis;
                 this.utterance = null;
 
-                // Setup Web Speech Recognition
                 if ('webkitSpeechRecognition' in window) {
                     this.recognition = new webkitSpeechRecognition();
+
+                    // Configure recognition settings
                     this.recognition.continuous = false;
                     this.recognition.interimResults = false;
+
+                    // Explicitly set to use microphone (this is the default, but we make it explicit)
+                    this.recognition.audioSource = 'microphone'; // Not all browsers support this
+
+                    // Event handlers
                     this.recognition.onresult = (event) => {
                         const transcript = event.results[0][0].transcript;
                         this.chatInput.value = transcript;
                         this.sendMessage();
                     };
+
                     this.recognition.onerror = (event) => {
                         console.error('Speech recognition error', event.error);
                         this.micButton.classList.remove('active');
                         this.isListening = false;
+                    };
+
+                    // Additional error handling
+                    this.recognition.onnomatch = () => {
+                        console.log('No speech was recognized');
+                        this.micButton.classList.remove('active');
+                        this.isListening = false;
+                    };
+
+                    this.recognition.onaudiostart = () => {
+                        console.log('Audio capture started');
+                    };
+
+                    this.recognition.onaudioend = () => {
+                        console.log('Audio capture ended');
+                    };
+
+                    this.recognition.onsoundstart = () => {
+                        console.log('Sound started being received');
+                    };
+
+                    this.recognition.onsoundend = () => {
+                        console.log('Sound stopped being received');
                     };
                 }
             }
@@ -718,53 +926,6 @@
                     "Type or speak your message...";
             }
 
-            // async sendMessage() {
-            //     const message = this.chatInput.value.trim();
-            //     if (!message) return;
-
-            //     // Add user message to chat
-            //     this.addMessage('user', message);
-            //     this.chatInput.value = '';
-
-            //     try {
-            //         // Show thinking indicator
-            //         this.addMessage('ai', '...', true);
-
-            //         // Send to backend
-            //         const response = await fetch('/chat', {
-            //             method: 'POST',
-            //             headers: { 'Content-Type': 'application/json' },
-            //             body: JSON.stringify({
-            //                 message: message,
-            //                 language: this.currentLanguage,
-            //                 context: this.chatHistory
-            //             })
-            //         });
-
-            //         const data = await response.json();
-
-            //         // Remove thinking indicator
-            //         this.removeLastAIMessage();
-
-            //         // Add AI response to chat
-            //         this.addMessage('ai', data.response);
-
-            //         // Update chat history
-            //         this.chatHistory.push(
-            //             { role: 'user', content: message },
-            //             { role: 'model', content: data.response }
-            //         );
-
-            //         // Make avatar speak and animate
-            //         this.makeAvatarSpeak(data.response);
-
-            //     } catch (error) {
-            //         console.error('Error:', error);
-            //         this.removeLastAIMessage();
-            //         this.addMessage('ai', 'Sorry, I encountered an error.');
-            //     }
-            // }
-
             async sendMessage() {
                 const message = this.chatInput.value.trim();
                 if (!message) return;
@@ -777,7 +938,7 @@
                     // Show thinking indicator
                     this.addMessage('ai', '...', true);
 
-                    // Send message to backend
+                    // Send to backend
                     const response = await fetch('/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -796,25 +957,13 @@
                     // Add AI response to chat
                     this.addMessage('ai', data.response);
 
-                    // ✅ Open website if URL is returned
-                    if (data.openUrl) {
-                        const newTab = window.open(data.openUrl, '_blank');
-
-                        // Fallback to Google search if direct link fails
-                        setTimeout(() => {
-                            if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
-                                window.open(data.fallbackUrl, '_blank');
-                            }
-                        }, 2000);
-                    }
-
                     // Update chat history
                     this.chatHistory.push(
                         { role: 'user', content: message },
                         { role: 'model', content: data.response }
                     );
 
-                    // Animate and speak response
+                    // Make avatar speak and animate
                     this.makeAvatarSpeak(data.response);
 
                 } catch (error) {
@@ -823,7 +972,6 @@
                     this.addMessage('ai', 'Sorry, I encountered an error.');
                 }
             }
-
 
             makeAvatarSpeak(text) {
                 // Stop any current speech
@@ -854,12 +1002,14 @@
                 this.utterance.onstart = () => {
                     this.isSpeaking = true;
                     this.avatarContainer.classList.add('speaking');
+                    this.startHandAnimation();
                 };
 
                 this.utterance.onend = () => {
                     this.isSpeaking = false;
                     this.avatarContainer.classList.remove('speaking');
                     this.setMouthShape('E'); // Neutral
+                    this.stopHandAnimation();
                 };
 
                 this.utterance.onerror = (event) => {
@@ -867,9 +1017,18 @@
                     this.isSpeaking = false;
                     this.avatarContainer.classList.remove('speaking');
                     this.setMouthShape('E');
+                    this.stopHandAnimation();
                 };
 
                 this.synth.speak(this.utterance);
+            }
+
+            startHandAnimation() {
+                // Hands will animate through CSS animations when .speaking class is added
+            }
+
+            stopHandAnimation() {
+                // Hands will stop animating when .speaking class is removed
             }
 
             toggleVoiceInput() {
@@ -972,10 +1131,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             const assistant = new AIAssistant();
         });
-
-
-
-
     </script>
 </body>
 
