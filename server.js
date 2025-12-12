@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.static("public")); // Serve static files from public folder
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 // app.post("/chat", async (req, res) => {
 //     const { message } = req.body;
